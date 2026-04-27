@@ -13,8 +13,7 @@ abstract class Parser[T]:
   def parseAll(seq: Seq[T]): Boolean =
     (seq forall parse) & end // note &, not &&
 
-extension (s: String)
-  def charParser(): Parser[Char] = BasicParser(s.toSet)
+extension (s: String) def charParser(): Parser[Char] = BasicParser(s.toSet)
 
 class BasicParser(chars: Set[Char]) extends Parser[Char]:
   override def parse(t: Char): Boolean = chars.contains(t)
