@@ -8,6 +8,9 @@ class RobotTest extends AnyFlatSpec with Matchers:
   val DEFAULT_INITIAL_POSITION: (Int, Int) = (0, 0)
   val DEFAULT_INITIAL_DIRECTION: Direction = Direction.North
   val DIRECTION_DIFFERENT_FROM_DEFAULT: Direction = Direction.East
+  val POSITION_AFTER_ONE_STEP_IN_DEFAULT_DIRECTION: (Int, Int) = (0, 1)
+  val FAILURE_CERTAIN = 1
+  val FAILURE_NONE = 0
 
   "A SimpleRobot" should "turn correctly" in:
     val robot =
@@ -81,13 +84,47 @@ class RobotTest extends AnyFlatSpec with Matchers:
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
     )
     while robot.battery != 0 do robot.act()
-    a[IllegalStateException] should be thrownBy robot.turn(
-      DIRECTION_DIFFERENT_FROM_DEFAULT
-    )
+    val prevPosition = robot.position
+    robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
+    robot.position should be(prevPosition)
 
   "A RobotWithBattery" should "be unable to act if the battery is low" in:
     val robot = RobotWithBattery(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
     )
     while robot.battery != 0 do robot.act()
-    a[IllegalStateException] should be thrownBy robot.act()
+    val prevPosition = robot.position
+    robot.act()
+    robot.position should be(prevPosition)
+
+  "A RobotCanFail" should "always fail to turn if failure is certain" in:
+    val robot = RobotCanFail(
+      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      FAILURE_CERTAIN
+    )
+    robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
+    robot.direction should be(DEFAULT_INITIAL_DIRECTION)
+
+  "A RobotCanFail" should "always fail to ACT if failure is certain" in :
+    val robot = RobotCanFail(
+      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      FAILURE_CERTAIN
+    )
+    robot.act()
+    robot.position should be(DEFAULT_INITIAL_POSITION)
+
+  "A RobotCanFail" should "never fail to turn if failure is impossible" in :
+    val robot = RobotCanFail(
+      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      FAILURE_NONE
+    )
+    robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
+    robot.direction should be(DIRECTION_DIFFERENT_FROM_DEFAULT)
+
+  "A RobotCanFail" should "never fail to act if failure is impossible" in :
+    val robot = RobotCanFail(
+      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      FAILURE_NONE
+    )
+    robot.act()
+    robot.position should be(POSITION_AFTER_ONE_STEP_IN_DEFAULT_DIRECTION)

@@ -1,5 +1,7 @@
 package ex2
 
+import scala.util.Random
+
 type Position = (Int, Int)
 enum Direction:
   case North, East, South, West
@@ -57,17 +59,30 @@ class RobotWithBattery(val robot: Robot)
     battery -= BATTERY_DECREASE_ON_ACTION
 
   override def turn(dir: Direction): Unit =
-    if dir != direction then
-      if battery != 0 then
-        super.turn(dir)
-        decreaseBatteryLevel()
-      else throw IllegalStateException("Battery is low")
+    if dir != direction && battery > 0 then
+      super.turn(dir)
+      decreaseBatteryLevel()
 
   override def act(): Unit =
     if battery != 0 then
       super.act()
       decreaseBatteryLevel()
-    else throw IllegalStateException("Battery is low")
+
+/*
+ * Robot that can fail
+ */
+class RobotCanFail(val robot: Robot, val failureProbability: Double)
+    extends SimpleRobot(robot.position, robot.direction):
+
+  private[this] val random: Random = Random()
+
+  private def willActionFail(): Boolean =
+    Random.nextDouble() < failureProbability
+
+  override def turn(dir: Direction): Unit =
+    if !willActionFail() then super.turn(dir)
+
+  override def act(): Unit = if !willActionFail() then super.act()
 
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))
