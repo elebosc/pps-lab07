@@ -42,6 +42,23 @@ class LoggingRobot(val robot: Robot) extends Robot:
     robot.act()
     println(robot.toString)
 
+class RobotWithBattery(val robot: Robot) extends SimpleRobot(robot.position, robot.direction):
+  val INITIAL_BATTERY_VALUE = 100
+  val BATTERY_DECREASE_ON_ACTION = 5
+  var battery: Int = INITIAL_BATTERY_VALUE
+  private def decreaseBatteryLevel(): Unit = battery -= BATTERY_DECREASE_ON_ACTION
+  override def turn(dir: Direction): Unit =
+    if dir != direction then
+      if (battery != 0) then
+        super.turn(dir)
+        decreaseBatteryLevel()
+      else throw IllegalStateException("Battery is low")
+  override def act(): Unit =
+    if (battery != 0) then
+      super.act()
+      decreaseBatteryLevel()
+    else throw IllegalStateException("Battery is low")
+
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))
   robot.act() // robot at (0, 1) facing North
