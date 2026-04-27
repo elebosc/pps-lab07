@@ -58,13 +58,13 @@ class RobotWithBattery(val robot: Robot)
 
   override def turn(dir: Direction): Unit =
     if dir != direction then
-      if (battery != 0) then
+      if battery != 0 then
         super.turn(dir)
         decreaseBatteryLevel()
       else throw IllegalStateException("Battery is low")
 
   override def act(): Unit =
-    if (battery != 0) then
+    if battery != 0 then
       super.act()
       decreaseBatteryLevel()
     else throw IllegalStateException("Battery is low")

@@ -1,6 +1,6 @@
 package ex4
 
-import java.util.OptionalInt
+
 
 // Optional!
 object ConnectThree extends App:
