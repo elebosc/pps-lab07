@@ -71,18 +71,27 @@ class RobotWithBattery(val robot: Robot)
 /*
  * Robot that can fail
  */
-class RobotCanFail(val robot: Robot, val failureProbability: Double)
+class RobotCanFail(val robot: Robot, val failureProbability: Double, val seed: Int)
     extends SimpleRobot(robot.position, robot.direction):
 
-  private[this] val random: Random = Random()
+  private[this] val random: Random = Random(seed)
 
   private def willActionFail(): Boolean =
-    Random.nextDouble() < failureProbability
+    random.nextDouble() < failureProbability
 
   override def turn(dir: Direction): Unit =
     if !willActionFail() then super.turn(dir)
 
   override def act(): Unit = if !willActionFail() then super.act()
+  
+/*
+ * Robot that repeats actions
+ */
+class RobotRepeated(val robot: Robot, val repetitionsNumber: Int)
+    extends  SimpleRobot(robot.position, robot.direction):
+  
+  override def act(): Unit =
+    for _ <- 1 to repetitionsNumber do super.act()
 
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))

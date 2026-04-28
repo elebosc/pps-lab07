@@ -9,8 +9,11 @@ class RobotTest extends AnyFlatSpec with Matchers:
   val DEFAULT_INITIAL_DIRECTION: Direction = Direction.North
   val DIRECTION_DIFFERENT_FROM_DEFAULT: Direction = Direction.East
   val POSITION_AFTER_ONE_STEP_IN_DEFAULT_DIRECTION: (Int, Int) = (0, 1)
+  val POSITION_AFTER_TWO_STEPS_IN_DEFAULT_DIRECTION: (Int, Int) = (0, 2)
+  val SEED = 0
   val FAILURE_CERTAIN = 1
   val FAILURE_NONE = 0
+  val REPETITIONS_NUMBER = 2
 
   "A SimpleRobot" should "turn correctly" in:
     val robot =
@@ -100,31 +103,43 @@ class RobotTest extends AnyFlatSpec with Matchers:
   "A RobotCanFail" should "always fail to turn if failure is certain" in:
     val robot = RobotCanFail(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
-      FAILURE_CERTAIN
+      FAILURE_CERTAIN,
+      SEED
     )
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.direction should be(DEFAULT_INITIAL_DIRECTION)
 
-  "A RobotCanFail" should "always fail to ACT if failure is certain" in :
+  "A RobotCanFail" should "always fail to ACT if failure is certain" in:
     val robot = RobotCanFail(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
-      FAILURE_CERTAIN
+      FAILURE_CERTAIN,
+      SEED
     )
     robot.act()
     robot.position should be(DEFAULT_INITIAL_POSITION)
 
-  "A RobotCanFail" should "never fail to turn if failure is impossible" in :
+  "A RobotCanFail" should "never fail to turn if failure is impossible" in:
     val robot = RobotCanFail(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
-      FAILURE_NONE
+      FAILURE_NONE,
+      SEED
     )
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.direction should be(DIRECTION_DIFFERENT_FROM_DEFAULT)
 
-  "A RobotCanFail" should "never fail to act if failure is impossible" in :
+  "A RobotCanFail" should "never fail to act if failure is impossible" in:
     val robot = RobotCanFail(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
-      FAILURE_NONE
+      FAILURE_NONE,
+      SEED
     )
     robot.act()
     robot.position should be(POSITION_AFTER_ONE_STEP_IN_DEFAULT_DIRECTION)
+
+  "A RobotRepeated" should "perform acts a specified number of times" in:
+    val robot = RobotRepeated(
+      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      REPETITIONS_NUMBER
+    )
+    robot.act()
+    robot.position should be(POSITION_AFTER_TWO_STEPS_IN_DEFAULT_DIRECTION)
