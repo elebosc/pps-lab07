@@ -52,13 +52,15 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotWithBattery" should "have a correct initial battery level" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     robot.battery should be(robot.INITIAL_BATTERY_VALUE)
 
   "A RobotWithBattery battery level" should "decrease on turn to a different direction" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.battery should be(
@@ -67,14 +69,16 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotWithBattery battery level" should "not decrease on turn to the same current direction" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     robot.turn(DEFAULT_INITIAL_DIRECTION)
     robot.battery should be(robot.INITIAL_BATTERY_VALUE)
 
   "A RobotWithBattery battery level" should "decrease on act" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.act()
@@ -84,7 +88,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotWithBattery" should "be unable to turn to a different direction if the battery is low" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     while robot.battery != 0 do robot.act()
     val prevPosition = robot.position
@@ -93,7 +98,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotWithBattery" should "be unable to act if the battery is low" in:
     val robot = RobotWithBattery(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION
     )
     while robot.battery != 0 do robot.act()
     val prevPosition = robot.position
@@ -102,7 +108,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotCanFail" should "always fail to turn if failure is certain" in:
     val robot = RobotCanFail(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION,
       FAILURE_CERTAIN,
       SEED
     )
@@ -111,7 +118,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotCanFail" should "always fail to ACT if failure is certain" in:
     val robot = RobotCanFail(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION,
       FAILURE_CERTAIN,
       SEED
     )
@@ -120,7 +128,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotCanFail" should "never fail to turn if failure is impossible" in:
     val robot = RobotCanFail(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION,
       FAILURE_NONE,
       SEED
     )
@@ -129,7 +138,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotCanFail" should "never fail to act if failure is impossible" in:
     val robot = RobotCanFail(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION,
       FAILURE_NONE,
       SEED
     )
@@ -138,7 +148,8 @@ class RobotTest extends AnyFlatSpec with Matchers:
 
   "A RobotRepeated" should "perform acts a specified number of times" in:
     val robot = RobotRepeated(
-      SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
+      DEFAULT_INITIAL_POSITION,
+      DEFAULT_INITIAL_DIRECTION,
       REPETITIONS_NUMBER
     )
     robot.act()

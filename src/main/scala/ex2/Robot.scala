@@ -48,53 +48,67 @@ class LoggingRobot(val robot: Robot) extends Robot:
 /*
  * Robot with battery
  */
-class RobotWithBattery(val robot: Robot)
-    extends SimpleRobot(robot.position, robot.direction):
+class RobotWithBattery(var pos: Position, var dir: Direction) extends Robot:
+
+  private val robot = new SimpleRobot(pos, dir)
 
   val INITIAL_BATTERY_VALUE = 100
   val BATTERY_DECREASE_ON_ACTION = 5
   var battery: Int = INITIAL_BATTERY_VALUE
 
+  export robot.{position, direction}
+
   private def decreaseBatteryLevel(): Unit =
     battery -= BATTERY_DECREASE_ON_ACTION
 
   override def turn(dir: Direction): Unit =
-    if dir != direction && battery > 0 then
-      super.turn(dir)
+    if dir != robot.direction && battery > 0 then
+      robot.turn(dir)
       decreaseBatteryLevel()
 
   override def act(): Unit =
     if battery > 0 then
-      super.act()
+      robot.act()
       decreaseBatteryLevel()
 
 /*
  * Robot that can fail
  */
 class RobotCanFail(
-    val robot: Robot,
+    var pos: Position,
+    var dir: Direction,
     val failureProbability: Double,
     val seed: Int
-) extends SimpleRobot(robot.position, robot.direction):
+) extends Robot:
 
-  private[this] val random: Random = Random(seed)
+  private val robot = new SimpleRobot(pos, dir)
+  private val random: Random = Random(seed)
+
+  export robot.{position, direction}
 
   private def willActionFail(): Boolean =
     random.nextDouble() < failureProbability
 
   override def turn(dir: Direction): Unit =
-    if !willActionFail() then super.turn(dir)
+    if !willActionFail() then robot.turn(dir)
 
-  override def act(): Unit = if !willActionFail() then super.act()
+  override def act(): Unit = if !willActionFail() then robot.act()
 
 /*
  * Robot that repeats actions
  */
-class RobotRepeated(val robot: Robot, val repetitionsNumber: Int)
-    extends SimpleRobot(robot.position, robot.direction):
+class RobotRepeated(
+    var pos: Position,
+    var dir: Direction,
+    val repetitionsNumber: Int
+) extends Robot:
+
+  private val robot = new SimpleRobot(pos, dir)
+
+  export robot.{position, direction, turn}
 
   override def act(): Unit =
-    for _ <- 1 to repetitionsNumber do super.act()
+    for _ <- 1 to repetitionsNumber do robot.act()
 
 @main def testRobot(): Unit =
   val robot = LoggingRobot(SimpleRobot((0, 0), Direction.North))
