@@ -71,8 +71,11 @@ class RobotWithBattery(val robot: Robot)
 /*
  * Robot that can fail
  */
-class RobotCanFail(val robot: Robot, val failureProbability: Double, val seed: Int)
-    extends SimpleRobot(robot.position, robot.direction):
+class RobotCanFail(
+    val robot: Robot,
+    val failureProbability: Double,
+    val seed: Int
+) extends SimpleRobot(robot.position, robot.direction):
 
   private[this] val random: Random = Random(seed)
 
@@ -83,13 +86,13 @@ class RobotCanFail(val robot: Robot, val failureProbability: Double, val seed: I
     if !willActionFail() then super.turn(dir)
 
   override def act(): Unit = if !willActionFail() then super.act()
-  
+
 /*
  * Robot that repeats actions
  */
 class RobotRepeated(val robot: Robot, val repetitionsNumber: Int)
-    extends  SimpleRobot(robot.position, robot.direction):
-  
+    extends SimpleRobot(robot.position, robot.direction):
+
   override def act(): Unit =
     for _ <- 1 to repetitionsNumber do super.act()
 
