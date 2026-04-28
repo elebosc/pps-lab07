@@ -64,7 +64,7 @@ class RobotWithBattery(val robot: Robot)
       decreaseBatteryLevel()
 
   override def act(): Unit =
-    if battery != 0 then
+    if battery > 0 then
       super.act()
       decreaseBatteryLevel()
 
