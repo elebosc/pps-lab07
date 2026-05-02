@@ -4,45 +4,44 @@ trait SolitaireADT:
   type Position
   type Move
   type Solution
-  val allowedMoves: Set[Move]
-  def placeMarks(): Seq[Solution]
+  val HORIZONTAL_DELTA = 3
+  val VERTICAL_DELTA = 3
+  val DIAGONAL_DELTA = 2
+  val ALLOWED_MOVES: Set[Move]
+  def placeMarks(): LazyList[Solution]
   def render(solution: Solution): String
 
 class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
-  private val HORIZONTAL_DELTA = 3
-  private val VERTICAL_DELTA = 3
-  private val DIAGONAL_DELTA = 2
-
   override type Position = (Int, Int)
   override type Move = Position => Position
-  override type Solution = Seq[Position]
-  override val allowedMoves: Set[Move] = Set(
+  override type Solution = List[Position]
+  override val ALLOWED_MOVES: Set[Move] = Set(
     p => (p._1 - HORIZONTAL_DELTA, p._2), // Left
     p => (p._1, p._2 - VERTICAL_DELTA), // Up
     p => (p._1 + HORIZONTAL_DELTA, p._2), // Right
     p => (p._1, p._2 + VERTICAL_DELTA), // Down
-    p => (p._1 - DIAGONAL_DELTA, p._2 - DIAGONAL_DELTA), // UpLeft
-    p => (p._1 + DIAGONAL_DELTA, p._2 - DIAGONAL_DELTA), // UpRight
-    p => (p._1 + DIAGONAL_DELTA, p._2 + DIAGONAL_DELTA), // BottomRight
-    p => (p._1 - DIAGONAL_DELTA, p._2 + DIAGONAL_DELTA) // BottomLeft
+    p => (p._1 - DIAGONAL_DELTA, p._2 - DIAGONAL_DELTA), // Up-Left
+    p => (p._1 + DIAGONAL_DELTA, p._2 - DIAGONAL_DELTA), // Up-Right
+    p => (p._1 + DIAGONAL_DELTA, p._2 + DIAGONAL_DELTA), // Bottom-Right
+    p => (p._1 - DIAGONAL_DELTA, p._2 + DIAGONAL_DELTA) // Bottom-Left
   )
 
-  private def isValidPosition(p: Position): Boolean =
+  private def isPositionValid(p: Position): Boolean =
     p._1 >= 0 && p._1 < width && p._2 >= 0 && p._2 < height
 
   override def placeMarks(): LazyList[Solution] =
-    def _placeMarks(solution: List[Position]): LazyList[Solution] =
-      if solution.length == width * height then LazyList(solution)
+    def _placeMarks(currentSolution: List[Position]): LazyList[Solution] =
+      if currentSolution.length == width * height then LazyList(currentSolution)
       else
-        val currentPos = solution.head
+        val currentPosition = currentSolution.head
         for
-          move <- LazyList.from(allowedMoves)
-          nextPos = move(currentPos)
-          if isValidPosition(nextPos) && !solution.contains(nextPos)
-          subSolution <- _placeMarks(nextPos :: solution)
+          move <- LazyList.from(ALLOWED_MOVES)
+          nextPosition = move(currentPosition)
+          if isPositionValid(nextPosition) && !currentSolution.contains(nextPosition)
+          subSolution <- _placeMarks(nextPosition :: currentSolution)
         yield subSolution
-    val startingPos = (width / 2, height / 2)
-    _placeMarks(List(startingPos))
+    val startingPosition = (width / 2, height / 2)
+    _placeMarks(List(startingPosition))
 
   override def render(solution: Solution): String =
     val reversed = solution.reverse
@@ -59,7 +58,7 @@ class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
 object SolitaireGame extends App:
 
   @main def main(): Unit =
-    val width: Int = 7
+    val width: Int = 5
     val height: Int = 5
     val solitaire = Solitaire(width, height)
     var count = 0
