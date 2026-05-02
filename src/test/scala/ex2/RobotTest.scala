@@ -76,10 +76,9 @@ class RobotTest extends AnyFlatSpec with Matchers:
     val robot = RobotWithBattery(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
     )
-    robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.act()
     robot.battery should be(
-      robot.INITIAL_BATTERY_VALUE - 2 * robot.BATTERY_DECREASE_ON_ACTION
+      robot.INITIAL_BATTERY_VALUE - robot.BATTERY_DECREASE_ON_ACTION
     )
 
   "A RobotWithBattery" should "be unable to turn to a different direction if the battery is low" in:
@@ -87,9 +86,9 @@ class RobotTest extends AnyFlatSpec with Matchers:
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION)
     )
     while robot.battery != 0 do robot.act()
-    val prevPosition = robot.position
+    val prevDirection = robot.direction
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
-    robot.position should be(prevPosition)
+    robot.direction should be(prevDirection)
 
   "A RobotWithBattery" should "be unable to act if the battery is low" in:
     val robot = RobotWithBattery(
@@ -109,7 +108,7 @@ class RobotTest extends AnyFlatSpec with Matchers:
     robot.turn(DIRECTION_DIFFERENT_FROM_DEFAULT)
     robot.direction should be(DEFAULT_INITIAL_DIRECTION)
 
-  "A RobotCanFail" should "always fail to ACT if failure is certain" in:
+  "A RobotCanFail" should "always fail to act if failure is certain" in:
     val robot = RobotCanFail(
       SimpleRobot(DEFAULT_INITIAL_POSITION, DEFAULT_INITIAL_DIRECTION),
       FAILURE_CERTAIN,
