@@ -45,12 +45,7 @@ class LoggingRobot(val robot: Robot) extends Robot:
     robot.act()
     println(robot.toString)
 
-/*
- * Robot with battery
- */
-class RobotWithBattery(var pos: Position, var dir: Direction) extends Robot:
-
-  private val robot = new SimpleRobot(pos, dir)
+class RobotWithBattery(val robot: Robot) extends Robot:
 
   val INITIAL_BATTERY_VALUE = 100
   val BATTERY_DECREASE_ON_ACTION = 5
@@ -71,17 +66,12 @@ class RobotWithBattery(var pos: Position, var dir: Direction) extends Robot:
       robot.act()
       decreaseBatteryLevel()
 
-/*
- * Robot that can fail
- */
 class RobotCanFail(
-    var pos: Position,
-    var dir: Direction,
+    val robot: Robot,
     val failureProbability: Double,
     val seed: Int
 ) extends Robot:
 
-  private val robot = new SimpleRobot(pos, dir)
   private val random: Random = Random(seed)
 
   export robot.{position, direction}
@@ -94,16 +84,10 @@ class RobotCanFail(
 
   override def act(): Unit = if !willActionFail() then robot.act()
 
-/*
- * Robot that repeats actions
- */
 class RobotRepeated(
-    var pos: Position,
-    var dir: Direction,
+    val robot: Robot,
     val repetitionsNumber: Int
 ) extends Robot:
-
-  private val robot = new SimpleRobot(pos, dir)
 
   export robot.{position, direction, turn}
 
