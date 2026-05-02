@@ -27,9 +27,24 @@ class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
     p => (p._1 - DIAGONAL_DELTA, p._2 + DIAGONAL_DELTA) // BottomLeft
   )
 
-  def placeMarks(): Seq[Solution] = ???
+  private def isValidPosition(p: Position): Boolean =
+    p._1 >= 0 && p._1 < width && p._2 >= 0 && p._2 < height
 
-  def render(solution: Solution): String =
+  override def placeMarks(): LazyList[Solution] =
+    def _placeMarks(solution: List[Position]): LazyList[Solution] =
+      if solution.length == width * height then LazyList(solution)
+      else
+        val currentPos = solution.head
+        for
+          move <- LazyList.from(allowedMoves)
+          nextPos = move(currentPos)
+          if isValidPosition(nextPos) && !solution.contains(nextPos)
+          subSolution <- _placeMarks(nextPos :: solution)
+        yield subSolution
+    val startingPos = (width / 2, height / 2)
+    _placeMarks(List(startingPos))
+
+  override def render(solution: Solution): String =
     val reversed = solution.reverse
     val rows =
       for
@@ -44,7 +59,15 @@ class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
 object SolitaireGame extends App:
 
   @main def main(): Unit =
-    val width: Int = 5
+    val width: Int = 7
     val height: Int = 5
     val solitaire = Solitaire(width, height)
-    for solution <- solitaire.placeMarks() do solitaire.render(solution)
+    var count = 0
+    solitaire.placeMarks().foreach { solution =>
+      count += 1
+      println(s"Solution $count")
+      println(solitaire.render(solution))
+      println()
+    }
+    if count == 0 then println("No solutions found.")
+    else println(s"Total solutions found: $count")
