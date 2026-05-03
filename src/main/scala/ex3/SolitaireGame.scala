@@ -29,19 +29,53 @@ class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
   private def isPositionValid(p: Position): Boolean =
     p._1 >= 0 && p._1 < width && p._2 >= 0 && p._2 < height
 
+  private def computeNextPositions(
+      startPosition: Position,
+      visitedPositions: Set[Position]
+  ): Set[Position] =
+    ALLOWED_MOVES
+      .map(move => move(startPosition))
+      .filter(position =>
+        isPositionValid(position) && !visitedPositions.contains(position)
+      )
+
+  private def countOnwardMoves(
+      startPosition: Position,
+      visitedPositions: Set[Position]
+  ): Int =
+    ALLOWED_MOVES
+      .map(move => move(startPosition))
+      .count(p => isPositionValid(p) && !visitedPositions.contains(p))
+
+  private def sortNextPositions(
+      nextPositions: Set[Position],
+      visitedPositions: Set[Position]
+  ): Seq[Position] =
+    nextPositions.toSeq.sortBy(position =>
+      countOnwardMoves(position, visitedPositions)
+    )
+
   override def placeMarks(): LazyList[Solution] =
-    def _placeMarks(currentSolution: List[Position]): LazyList[Solution] =
+    def _placeMarks(
+        currentSolution: List[Position],
+        visitedPositions: Set[Position]
+    ): LazyList[Solution] =
       if currentSolution.length == width * height then LazyList(currentSolution)
       else
         val currentPosition = currentSolution.head
+        val nextPositions =
+          computeNextPositions(currentPosition, visitedPositions)
+        val sortedNextPositions =
+          sortNextPositions(nextPositions, visitedPositions)
         for
-          move <- LazyList.from(ALLOWED_MOVES)
-          nextPosition = move(currentPosition)
-          if isPositionValid(nextPosition) && !currentSolution.contains(nextPosition)
-          subSolution <- _placeMarks(nextPosition :: currentSolution)
+          nextPosition <- LazyList.from(sortedNextPositions)
+          subSolution <- _placeMarks(
+            nextPosition :: currentSolution,
+            visitedPositions + nextPosition
+          )
         yield subSolution
-    val startingPosition = (width / 2, height / 2)
-    _placeMarks(List(startingPosition))
+    val startPosition = (width / 2, height / 2)
+    _placeMarks(List(startPosition), Set(startPosition))
 
   override def render(solution: Solution): String =
     val reversed = solution.reverse
