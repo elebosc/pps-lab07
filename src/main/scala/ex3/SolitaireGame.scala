@@ -45,7 +45,7 @@ class Solitaire(val width: Int, val height: Int) extends SolitaireADT:
   ): Int =
     ALLOWED_MOVES
       .map(move => move(startPosition))
-      .count(p => isPositionValid(p) && !visitedPositions.contains(p))
+      .count(position => isPositionValid(position) && !visitedPositions.contains(position))
 
   private def sortNextPositions(
       nextPositions: Set[Position],
